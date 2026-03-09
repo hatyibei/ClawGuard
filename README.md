@@ -254,10 +254,8 @@ TypeScript · Express · SQLite (WAL mode) · React + Tailwind (dashboard) · We
 - [x] Smart model routing (Opus → Haiku)
 - [x] Community-updatable domain blocklist
 - [x] Docker image with non-root user
-- [x] SSE streaming passthrough
-- [x] Response body security scanning
-- [x] Self-healing agent responses (HTTP 200 + LLM-formatted feedback)
-- [x] Async non-blocking log queue
+- [ ] SSE streaming passthrough
+- [ ] Response body security scanning
 - [ ] `lobstergate migrate --from-tokpinch` CLI
 - [ ] npm package publish + Docker Hub
 - [ ] Predictive cost anomaly detection
