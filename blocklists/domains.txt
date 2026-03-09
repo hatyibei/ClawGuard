@@ -1,0 +1,42 @@
+# ClawGuard Domain Blocklist
+# Lines starting with # are comments
+# Wildcard prefix *. matches all subdomains
+
+# === Tunneling / Port Forwarding Services ===
+*.ngrok.io
+*.ngrok-free.app
+*.serveo.net
+*.localtunnel.me
+*.localhost.run
+*.loca.lt
+*.telebit.cloud
+
+# === Paste / Data Sharing Services ===
+*.pastebin.com
+*.paste.ee
+*.dpaste.org
+*.hastebin.com
+*.ghostbin.com
+*.rentry.co
+
+# === Webhook / Request Capture Services ===
+*.webhook.site
+*.requestbin.com
+*.pipedream.net
+*.hookbin.com
+
+# === Security Testing / OAST Services ===
+*.burpcollaborator.net
+*.interact.sh
+*.oast.fun
+*.oast.pro
+*.oast.me
+*.canarytokens.com
+
+# === Known C2 / Malware Infrastructure ===
+# Add community-reported domains here
+
+# === Suspicious File Hosting ===
+*.transfer.sh
+*.file.io
+*.tmpfiles.org
