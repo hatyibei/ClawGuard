@@ -35,8 +35,8 @@ RUN mkdir -p /app/data && chown -R lobstergate:lobstergate /app
 USER lobstergate
 
 ENV NODE_ENV=production
-ENV CLAWGUARD_DATA_DIR=/app/data
-ENV CLAWGUARD_PORT=4200
+ENV LOBSTERGATE_DATA_DIR=/app/data
+ENV LOBSTERGATE_PORT=4200
 
 EXPOSE 4200
 
