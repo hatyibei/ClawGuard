@@ -25,7 +25,7 @@ export function createWebSocketServer(server: Server): WebSocketBroadcaster {
     ws.send(
       JSON.stringify({
         type: "connected",
-        data: { message: "Connected to ClawGuard WebSocket" },
+        data: { message: "Connected to LobsterGate WebSocket" },
       })
     );
   });

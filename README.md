@@ -1,10 +1,10 @@
-# ClawGuard
+# LobsterGate
 
 **The safety proxy for OpenClaw. ToS compliance + security + cost control.**
 
-> "TokPinch watches your wallet. ClawGuard watches everything."
+> "TokPinch watches your wallet. LobsterGate watches everything."
 
-## Why ClawGuard?
+## Why LobsterGate?
 
 OpenClaw users face three critical risks:
 
@@ -12,11 +12,11 @@ OpenClaw users face three critical risks:
 2. **Security threats** — 12% of ClawHub skills contain malware (keyloggers, credential theft, data exfiltration)
 3. **Cost explosions** — Runaway agents and loops can burn $800+/month before you notice
 
-ClawGuard is a transparent proxy that sits between OpenClaw and your LLM providers, enforcing compliance, security, and cost controls on every request.
+LobsterGate is a transparent proxy that sits between OpenClaw and your LLM providers, enforcing compliance, security, and cost controls on every request.
 
-### ClawGuard vs TokPinch
+### LobsterGate vs TokPinch
 
-| Feature | TokPinch | ClawGuard |
+| Feature | TokPinch | LobsterGate |
 |---|:---:|:---:|
 | Cost tracking | Yes | Yes |
 | Budget enforcement | Yes | Yes |
@@ -29,7 +29,10 @@ ClawGuard is a transparent proxy that sits between OpenClaw and your LLM provide
 | **Outbound URL blocklist** | No | **Yes** |
 | **Credential leak prevention** | No | **Yes** |
 | **Multi-provider unified budget** | No | **Yes** |
-| TokPinch migration tool | - | **Yes** |
+| **SSE streaming passthrough** | No | **Yes** |
+| **Self-healing agent responses** | No | **Yes** |
+| **Response body scanning** | No | **Yes** |
+| **Async non-blocking logging** | No | **Yes** |
 
 ## 30-Second Setup
 
@@ -37,22 +40,22 @@ ClawGuard is a transparent proxy that sits between OpenClaw and your LLM provide
 
 ```bash
 docker run -p 4200:4200 \
-  -v clawguard-data:/app/data \
+  -v lobstergate-data:/app/data \
   -e DASHBOARD_PASSWORD=yourpassword \
-  clawguard/clawguard
+  lobstergate/lobstergate
 ```
 
 ### npm
 
 ```bash
-npx clawguard@latest
+npx lobstergate@latest
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/hatyibei/ClawGuard.git
-cd ClawGuard
+git clone https://github.com/hatyibei/LobsterGate.git
+cd LobsterGate
 npm install
 npm run build
 npm start
@@ -109,9 +112,30 @@ Request → [Compliance] → [Security] → [Cost] → LLM Provider
 - **Smart Model Routing** — Auto-downgrades small tasks (e.g., Opus to Haiku, saving up to 95%)
 - **Multi-Provider Unified Budget** — Track Anthropic + OpenAI + OpenRouter spend together
 
+### Self-Healing Agent Responses
+
+When LobsterGate blocks a request, it doesn't return a raw HTTP 403/429 that crashes agentic loops. Instead, it returns **HTTP 200** with an LLM-formatted response that guides the agent to self-correct:
+
+```json
+{
+  "role": "assistant",
+  "content": "[LobsterGate System Override] Your request was intercepted. Reason: Outbound to blocklisted domain: ngrok.io. Please adjust your approach using an alternative method."
+}
+```
+
+The agent sees this as a normal assistant message and autonomously pivots — no crashes, no retries, no human intervention.
+
+### SSE Streaming Passthrough
+
+Full `stream: true` (Server-Sent Events) support. Streaming chunks are piped to the client with zero buffering, while a background tap extracts token usage and scans response content for credential leaks.
+
+### Response Body Scanning
+
+Security scanning covers both requests and responses (including streamed chunks), catching attacks where malicious skills trick the LLM into echoing secrets.
+
 ## Dashboard
 
-ClawGuard includes a real-time web dashboard at `http://localhost:4200/dashboard`:
+LobsterGate includes a real-time web dashboard at `http://localhost:4200/dashboard`:
 
 - Live event stream with filtering (All / Blocked / ToS / Security / Cost)
 - Compliance pass rate gauge
@@ -126,7 +150,7 @@ ClawGuard includes a real-time web dashboard at `http://localhost:4200/dashboard
 
 ```bash
 # Required
-CLAWGUARD_PORT=4200           # Proxy port (default: 4200)
+LOBSTERGATE_PORT=4200           # Proxy port (default: 4200)
 DASHBOARD_PASSWORD=secret     # Dashboard auth password
 
 # Provider API Keys (optional — can also pass through from client)
@@ -142,7 +166,7 @@ SLACK_WEBHOOK_URL=...
 
 ### Config File
 
-Create `clawguard.json` in your working directory:
+Create `lobstergate.json` in your working directory:
 
 ```json
 {
@@ -203,11 +227,7 @@ Create `clawguard.json` in your working directory:
 
 ## Migrating from TokPinch
 
-```bash
-npx clawguard migrate --from-tokpinch
-```
-
-This imports your TokPinch budget settings and port configuration.
+LobsterGate is a drop-in replacement. Point your OpenClaw `baseUrl` at `http://localhost:4200/v1` and configure your budget settings in `lobstergate.json`. Your TokPinch budget/cost concepts map directly to LobsterGate's cost engine config.
 
 ## Development
 

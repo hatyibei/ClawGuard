@@ -14,11 +14,11 @@ export async function sendTelegramAlert(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: config.chat_id,
-        text: `🛡️ ClawGuard Alert\n\n${message}`,
+        text: `🛡️ LobsterGate Alert\n\n${message}`,
         parse_mode: "Markdown",
       }),
     });
   } catch (err) {
-    console.error("[ClawGuard] Telegram alert failed:", err);
+    console.error("[LobsterGate] Telegram alert failed:", err);
   }
 }

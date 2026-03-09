@@ -18,7 +18,7 @@ export class AlertEngine {
     const prefix = severity === "critical" ? "CRITICAL" : severity === "warning" ? "WARNING" : "INFO";
     const fullMessage = `[${prefix}] ${message}`;
 
-    console.log(`[ClawGuard Alert] ${fullMessage}`);
+    console.log(`[LobsterGate Alert] ${fullMessage}`);
 
     const promises: Promise<void>[] = [];
 
@@ -30,7 +30,7 @@ export class AlertEngine {
     }
     if (this.config.email.enabled) {
       promises.push(
-        sendEmailAlert(this.config.email, `${prefix}: ClawGuard Alert`, fullMessage)
+        sendEmailAlert(this.config.email, `${prefix}: LobsterGate Alert`, fullMessage)
       );
     }
     if (this.config.webhook.enabled && this.webhookUrl) {
@@ -46,14 +46,14 @@ export class AlertEngine {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          source: "clawguard",
+          source: "lobstergate",
           severity,
           message,
           timestamp: new Date().toISOString(),
         }),
       });
     } catch (err) {
-      console.error("[ClawGuard] Webhook alert failed:", err);
+      console.error("[LobsterGate] Webhook alert failed:", err);
     }
   }
 }

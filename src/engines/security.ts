@@ -197,6 +197,32 @@ export class SecurityEngine {
     return findings;
   }
 
+  /**
+   * Scan arbitrary text (e.g. response body or accumulated SSE chunks)
+   * for credential patterns. Used for post-response scanning.
+   */
+  scanText(text: string): SecurityFinding[] {
+    const findings: SecurityFinding[] = [];
+
+    if (!this.config.exfiltration_detection.enabled) return findings;
+
+    for (const { pattern, name } of CREDENTIAL_PATTERNS) {
+      if (pattern.test(text)) {
+        findings.push({
+          type: "CREDENTIAL_EXPOSURE",
+          severity: "CRITICAL",
+          detail: `Potential ${name} detected in response content`,
+        });
+      }
+    }
+
+    // Also check for bulk PII in responses
+    const exfilFindings = this.detectExfiltrationPatterns(text);
+    findings.push(...exfilFindings);
+
+    return findings;
+  }
+
   addBlocklistEntry(type: "domain" | "ip", value: string): void {
     if (type === "domain") {
       this.blockedDomains.push(value);

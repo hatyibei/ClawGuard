@@ -9,7 +9,7 @@ import { createWebSocketServer } from "./dashboard/ws.js";
 function main() {
   console.log(`
   ┌─────────────────────────────────────┐
-  │         🛡️  ClawGuard v0.1.0        │
+  │       🦞  LobsterGate v0.2.0         │
   │   Safety Proxy for OpenClaw         │
   │                                     │
   │   ToS Compliance + Security         │
@@ -20,8 +20,8 @@ function main() {
   const config = loadConfig();
   const db = getDb(config.data_dir);
 
-  console.log(`[ClawGuard] Data directory: ${config.data_dir}`);
-  console.log(`[ClawGuard] Dashboard password: ${config.dashboard_password ? "SET" : "NOT SET (open access)"}`);
+  console.log(`[LobsterGate] Data directory: ${config.data_dir}`);
+  console.log(`[LobsterGate] Dashboard password: ${config.dashboard_password ? "SET" : "NOT SET (open access)"}`);
 
   // Create Express app
   const app = createServer(config, db, { broadcast: () => {} });
@@ -39,11 +39,11 @@ function main() {
 
   // Start listening
   server.listen(config.port, () => {
-    console.log(`[ClawGuard] Proxy listening on http://localhost:${config.port}`);
-    console.log(`[ClawGuard] Dashboard: http://localhost:${config.port}/dashboard`);
-    console.log(`[ClawGuard] WebSocket: ws://localhost:${config.port}/ws`);
+    console.log(`[LobsterGate] Proxy listening on http://localhost:${config.port}`);
+    console.log(`[LobsterGate] Dashboard: http://localhost:${config.port}/dashboard`);
+    console.log(`[LobsterGate] WebSocket: ws://localhost:${config.port}/ws`);
     console.log("");
-    console.log("[ClawGuard] Configure OpenClaw:");
+    console.log("[LobsterGate] Configure OpenClaw:");
     console.log(`  { "baseUrl": "http://localhost:${config.port}/v1" }`);
     console.log("");
 
@@ -54,20 +54,24 @@ function main() {
     if (providers.openai.api_key) active.push("OpenAI");
     if (providers.openrouter.api_key) active.push("OpenRouter");
     if (active.length > 0) {
-      console.log(`[ClawGuard] Active providers: ${active.join(", ")}`);
+      console.log(`[LobsterGate] Active providers: ${active.join(", ")}`);
     } else {
-      console.log("[ClawGuard] No provider API keys configured — proxy will forward auth headers from client");
+      console.log("[LobsterGate] No provider API keys configured — proxy will forward auth headers from client");
     }
 
-    console.log("[ClawGuard] Ready. All requests are protected by 3-layer defense.");
+    console.log("[LobsterGate] Ready. All requests are protected by 3-layer defense.");
   });
 
-  // Graceful shutdown
+  // Graceful shutdown — flush log queue before closing DB
   const shutdown = () => {
-    console.log("\n[ClawGuard] Shutting down...");
+    console.log("\n[LobsterGate] Shutting down...");
+    const logQueue = (appWithWs as unknown as Record<string, unknown>)._logQueue;
+    if (logQueue && typeof (logQueue as { shutdown: () => void }).shutdown === "function") {
+      (logQueue as { shutdown: () => void }).shutdown();
+    }
     server.close(() => {
       closeDb();
-      console.log("[ClawGuard] Goodbye.");
+      console.log("[LobsterGate] Goodbye.");
       process.exit(0);
     });
   };

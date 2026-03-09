@@ -8,7 +8,7 @@ export function getDb(dataDir: string): Database.Database {
   if (db) return db;
 
   fs.mkdirSync(dataDir, { recursive: true });
-  const dbPath = path.join(dataDir, "clawguard.db");
+  const dbPath = path.join(dataDir, "lobstergate.db");
   db = new Database(dbPath);
 
   // Enable WAL mode for better concurrent read performance

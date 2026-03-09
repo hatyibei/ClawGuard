@@ -1,4 +1,4 @@
-# ClawGuard Domain Blocklist
+# LobsterGate Domain Blocklist
 # Lines starting with # are comments
 # Wildcard prefix *. matches all subdomains
 

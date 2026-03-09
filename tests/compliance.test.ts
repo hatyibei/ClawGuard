@@ -12,6 +12,18 @@ function createTestDb(): Database.Database {
       first_seen TEXT NOT NULL DEFAULT (datetime('now')),
       last_seen TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS budget_state (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      daily_spent_usd REAL DEFAULT 0,
+      monthly_spent_usd REAL DEFAULT 0,
+      daily_saved_usd REAL DEFAULT 0,
+      daily_requests INTEGER DEFAULT 0,
+      last_reset_day TEXT,
+      last_reset_month TEXT
+    );
+    INSERT INTO budget_state (id, daily_spent_usd, monthly_spent_usd, daily_saved_usd, daily_requests, last_reset_day, last_reset_month)
+    VALUES (1, 0, 0, 0, 0, date('now'), strftime('%Y-%m', 'now'));
   `);
   return db;
 }

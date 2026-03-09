@@ -22,10 +22,10 @@ export async function sendEmailAlert(
     await transporter.sendMail({
       from: config.from,
       to: config.to,
-      subject: `[ClawGuard] ${subject}`,
+      subject: `[LobsterGate] ${subject}`,
       text: message,
     });
   } catch (err) {
-    console.error("[ClawGuard] Email alert failed:", err);
+    console.error("[LobsterGate] Email alert failed:", err);
   }
 }

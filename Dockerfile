@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tini \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -r clawguard && useradd -r -g clawguard -m clawguard
+RUN groupadd -r lobstergate && useradd -r -g lobstergate -m lobstergate
 
 WORKDIR /app
 
@@ -30,9 +30,9 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/dashboard/dist ./dashboard/dist
 COPY blocklists/ ./blocklists/
 
-RUN mkdir -p /app/data && chown -R clawguard:clawguard /app
+RUN mkdir -p /app/data && chown -R lobstergate:lobstergate /app
 
-USER clawguard
+USER lobstergate
 
 ENV NODE_ENV=production
 ENV CLAWGUARD_DATA_DIR=/app/data

@@ -18,11 +18,38 @@ interface DedupEntry {
 export class ComplianceEngine {
   private config: ComplianceConfig;
   private db: Database.Database;
+  private lastCountDate: string = "";
   private requestCountToday: number = 0;
 
   constructor(config: ComplianceConfig, db: Database.Database) {
     this.config = config;
     this.db = db;
+    this.syncDailyCount();
+  }
+
+  /**
+   * Sync daily request count from budget_state table.
+   * Auto-resets if the date has changed.
+   */
+  private syncDailyCount(): void {
+    const today = new Date().toISOString().slice(0, 10);
+    if (this.lastCountDate !== today) {
+      // Date rolled over — reset counter
+      this.requestCountToday = 0;
+      this.lastCountDate = today;
+
+      // Also read persisted count from DB in case of process restart mid-day
+      try {
+        const row = this.db
+          .prepare("SELECT daily_requests, last_reset_day FROM budget_state WHERE id = 1")
+          .get() as { daily_requests: number; last_reset_day: string } | undefined;
+        if (row && row.last_reset_day === today) {
+          this.requestCountToday = row.daily_requests;
+        }
+      } catch {
+        // DB not ready yet — start from 0
+      }
+    }
   }
 
   validate(
@@ -30,6 +57,9 @@ export class ComplianceEngine {
     body: Record<string, unknown>,
     provider: string
   ): ComplianceVerdict {
+    // Ensure daily counter is fresh
+    this.syncDailyCount();
+
     // 1. OAuth Token detection
     if (this.config.block_oauth_tokens && authHeader) {
       if (this.detectOAuthToken(authHeader, provider)) {
@@ -41,7 +71,7 @@ export class ComplianceEngine {
       }
     }
 
-    // 2. Daily request cap
+    // 2. Daily request cap (synced with persistent budget_state)
     this.requestCountToday++;
     if (this.requestCountToday > this.config.daily_request_cap) {
       return {

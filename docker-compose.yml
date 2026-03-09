@@ -1,15 +1,15 @@
 version: "3.8"
 
 services:
-  clawguard:
+  lobstergate:
     build: .
-    container_name: clawguard
+    container_name: lobstergate
     ports:
       - "4200:4200"
     volumes:
-      - clawguard-data:/app/data
+      - lobstergate-data:/app/data
     environment:
-      - CLAWGUARD_PORT=4200
+      - LOBSTERGATE_PORT=4200
       - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD:-changeme}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
@@ -25,4 +25,4 @@ services:
       - no-new-privileges:true
 
 volumes:
-  clawguard-data:
+  lobstergate-data:

@@ -1,20 +1,14 @@
 import type { ProviderConfig } from "../../config/schema.js";
-
-export interface ForwardResult {
-  status: number;
-  headers: Record<string, string>;
-  body: unknown;
-  inputTokens: number;
-  outputTokens: number;
-}
+import type { ProviderResult } from "./types.js";
 
 export async function forwardToOpenAI(
   config: ProviderConfig["openai"],
   path: string,
   method: string,
   headers: Record<string, string>,
-  body: unknown
-): Promise<ForwardResult> {
+  body: unknown,
+  isStream: boolean
+): Promise<ProviderResult> {
   const url = `${config.base_url}${path}`;
 
   const authHeader = config.api_key
@@ -32,18 +26,28 @@ export async function forwardToOpenAI(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const responseBody = (await response.json()) as Record<string, unknown>;
+  const responseHeaders = Object.fromEntries(response.headers.entries());
 
-  // Extract token usage from OpenAI response
+  if (isStream && response.ok && response.body) {
+    return {
+      status: response.status,
+      headers: responseHeaders,
+      stream: response.body,
+      isStream: true,
+    };
+  }
+
+  const responseBody = (await response.json()) as Record<string, unknown>;
   const usage = responseBody.usage as
     | { prompt_tokens?: number; completion_tokens?: number }
     | undefined;
 
   return {
     status: response.status,
-    headers: Object.fromEntries(response.headers.entries()),
+    headers: responseHeaders,
     body: responseBody,
     inputTokens: usage?.prompt_tokens || 0,
     outputTokens: usage?.completion_tokens || 0,
+    isStream: false,
   };
 }

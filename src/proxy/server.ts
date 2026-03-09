@@ -2,17 +2,18 @@ import express from "express";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import type Database from "better-sqlite3";
-import type { ClawGuardConfig } from "../config/schema.js";
+import type { LobsterGateConfig } from "../config/schema.js";
 import { ComplianceEngine } from "../engines/compliance.js";
 import { SecurityEngine } from "../engines/security.js";
 import { CostEngine } from "../engines/cost.js";
 import { AlertEngine } from "../alerts/index.js";
+import { LogQueue } from "../store/log-queue.js";
 import { createProxyMiddleware } from "./middleware.js";
 import { createDashboardRouter } from "../dashboard/api.js";
 import { type WebSocketBroadcaster } from "../dashboard/ws.js";
 
 export function createServer(
-  config: ClawGuardConfig,
+  config: LobsterGateConfig,
   db: Database.Database,
   wsBroadcaster: WebSocketBroadcaster
 ) {
@@ -41,12 +42,13 @@ export function createServer(
   const security = new SecurityEngine(config.security);
   const cost = new CostEngine(config.cost, db);
   const alerts = new AlertEngine(config.alerts);
+  const logQueue = new LogQueue(db);
 
   // Health check
   app.get("/health", (_req, res) => {
     res.json({
       status: "ok",
-      version: "0.1.0",
+      version: "0.2.0",
       uptime: process.uptime(),
     });
   });
@@ -67,43 +69,35 @@ export function createServer(
     });
   }
 
+  const proxyCtx = {
+    config,
+    db,
+    compliance,
+    security,
+    cost,
+    alerts,
+    wsBroadcaster,
+    logQueue,
+  };
+
   // Proxy routes — Anthropic API compatible
-  app.post(
-    "/v1/messages",
-    createProxyMiddleware({
-      config,
-      db,
-      compliance,
-      security,
-      cost,
-      alerts,
-      wsBroadcaster,
-    })
-  );
+  app.post("/v1/messages", createProxyMiddleware(proxyCtx));
 
   // OpenAI API compatible
-  app.post(
-    "/v1/chat/completions",
-    createProxyMiddleware({
-      config,
-      db,
-      compliance,
-      security,
-      cost,
-      alerts,
-      wsBroadcaster,
-    })
-  );
+  app.post("/v1/chat/completions", createProxyMiddleware(proxyCtx));
 
   // Catch-all for unsupported routes
   app.use((_req, res) => {
     res.status(404).json({
       error: {
         type: "not_found",
-        message: "ClawGuard proxy: endpoint not found. Supported: POST /v1/messages, POST /v1/chat/completions",
+        message: "LobsterGate proxy: endpoint not found. Supported: POST /v1/messages, POST /v1/chat/completions",
       },
     });
   });
+
+  // Expose logQueue for shutdown
+  (app as unknown as Record<string, unknown>)._logQueue = logQueue;
 
   return app;
 }

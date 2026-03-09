@@ -257,7 +257,7 @@ function LayerBreakdown({ events }: { events: Event[] }) {
 }
 
 // --- Main Dashboard ---
-export default function ClawGuardDashboard() {
+export default function LobsterGateDashboard() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLive, setIsLive] = useState(false);
   const [costHistory, setCostHistory] = useState<number[]>([]);
@@ -316,9 +316,9 @@ export default function ClawGuardDashboard() {
       <div className="border-b border-slate-800 px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center text-sm font-bold">CG</div>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-sm font-bold">LG</div>
             <div>
-              <h1 className="text-sm font-bold tracking-tight">ClawGuard</h1>
+              <h1 className="text-sm font-bold tracking-tight">LobsterGate</h1>
               <p className="text-xs text-slate-500">Safety Proxy for OpenClaw</p>
             </div>
           </div>

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import type Database from "better-sqlite3";
-import type { ClawGuardConfig } from "../config/schema.js";
+import type { LobsterGateConfig } from "../config/schema.js";
 import { getRecentLogs, getDailyStats } from "../store/logs.js";
 import { getBudgetState } from "../store/budget.js";
 
 export function createDashboardRouter(
-  config: ClawGuardConfig,
+  config: LobsterGateConfig,
   db: Database.Database
 ) {
   const router = Router();

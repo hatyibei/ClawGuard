@@ -1,18 +1,18 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
-import { ClawGuardConfigSchema, type ClawGuardConfig } from "./schema.js";
+import { LobsterGateConfigSchema, type LobsterGateConfig } from "./schema.js";
 
-export function loadConfig(): ClawGuardConfig {
+export function loadConfig(): LobsterGateConfig {
   const env = process.env;
 
   const raw: Record<string, unknown> = {};
 
   // Try loading config file
   const configPaths = [
-    env.CLAWGUARD_CONFIG,
-    path.join(process.cwd(), "clawguard.json"),
-    path.join(env.HOME || "/", ".config", "clawguard", "config.json"),
+    env.LOBSTERGATE_CONFIG,
+    path.join(process.cwd(), "lobstergate.json"),
+    path.join(env.HOME || "/", ".config", "lobstergate", "config.json"),
   ].filter(Boolean) as string[];
 
   for (const cfgPath of configPaths) {
@@ -26,8 +26,8 @@ export function loadConfig(): ClawGuardConfig {
   }
 
   // Env overrides
-  if (env.CLAWGUARD_PORT) raw.port = parseInt(env.CLAWGUARD_PORT, 10);
-  if (env.CLAWGUARD_DATA_DIR) raw.data_dir = env.CLAWGUARD_DATA_DIR;
+  if (env.LOBSTERGATE_PORT) raw.port = parseInt(env.LOBSTERGATE_PORT, 10);
+  if (env.LOBSTERGATE_DATA_DIR) raw.data_dir = env.LOBSTERGATE_DATA_DIR;
   if (env.DASHBOARD_PASSWORD) raw.dashboard_password = env.DASHBOARD_PASSWORD;
 
   // Provider keys from env
@@ -67,5 +67,5 @@ export function loadConfig(): ClawGuardConfig {
     raw.jwt_secret = crypto.randomBytes(64).toString("hex");
   }
 
-  return ClawGuardConfigSchema.parse(raw);
+  return LobsterGateConfigSchema.parse(raw);
 }

@@ -121,4 +121,29 @@ describe("SecurityEngine", () => {
       expect(result.decision).toBe("BLOCK");
     });
   });
+
+  describe("Response Body Scanning (scanText)", () => {
+    it("should detect credentials in response text", () => {
+      const responseText = "Here is the key: sk-ant-api03-abcdefghijklmnopqrstuvwxyz1234567890";
+      const findings = engine.scanText(responseText);
+      expect(findings.some(f => f.type === "CREDENTIAL_EXPOSURE")).toBe(true);
+    });
+
+    it("should detect AWS keys in response text", () => {
+      const responseText = "Your AWS key is AKIAIOSFODNN7EXAMPLE";
+      const findings = engine.scanText(responseText);
+      expect(findings.some(f => f.type === "CREDENTIAL_EXPOSURE")).toBe(true);
+    });
+
+    it("should detect bulk PII in response text", () => {
+      const emails = Array.from({ length: 10 }, (_, i) => `user${i}@example.com`).join(", ");
+      const findings = engine.scanText(`Found these: ${emails}`);
+      expect(findings.some(f => f.type === "DATA_EXFILTRATION")).toBe(true);
+    });
+
+    it("should return empty for clean text", () => {
+      const findings = engine.scanText("This is a normal response about coding.");
+      expect(findings.length).toBe(0);
+    });
+  });
 });

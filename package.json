@@ -1,10 +1,10 @@
 {
-  "name": "clawguard",
+  "name": "lobstergate",
   "version": "0.1.0",
   "description": "The safety proxy for OpenClaw. ToS compliance + security + cost control.",
   "main": "dist/index.js",
   "bin": {
-    "clawguard": "./dist/index.js"
+    "lobstergate": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

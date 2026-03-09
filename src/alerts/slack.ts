@@ -11,10 +11,10 @@ export async function sendSlackAlert(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: `🛡️ *ClawGuard Alert*\n\n${message}`,
+        text: `🛡️ *LobsterGate Alert*\n\n${message}`,
       }),
     });
   } catch (err) {
-    console.error("[ClawGuard] Slack alert failed:", err);
+    console.error("[LobsterGate] Slack alert failed:", err);
   }
 }

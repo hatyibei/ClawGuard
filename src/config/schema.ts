@@ -144,7 +144,7 @@ export const ProviderConfigSchema = z.object({
     .default({}),
 });
 
-export const ClawGuardConfigSchema = z.object({
+export const LobsterGateConfigSchema = z.object({
   port: z.number().default(4200),
   data_dir: z.string().default("./data"),
   dashboard_password: z.string().default(""),
@@ -156,7 +156,7 @@ export const ClawGuardConfigSchema = z.object({
   providers: ProviderConfigSchema.default({}),
 });
 
-export type ClawGuardConfig = z.infer<typeof ClawGuardConfigSchema>;
+export type LobsterGateConfig = z.infer<typeof LobsterGateConfigSchema>;
 export type ComplianceConfig = z.infer<typeof ComplianceConfigSchema>;
 export type SecurityConfig = z.infer<typeof SecurityConfigSchema>;
 export type CostConfig = z.infer<typeof CostConfigSchema>;
